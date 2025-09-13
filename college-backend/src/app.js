@@ -7,7 +7,10 @@ import authRoutes from "./modules/auth/auth.routes.js"
 import studentRoutes from "./modules/student/student.routes.js"
 import studentResult from "./modules/result/result.routes.js"
 import studentEnquiry from "./modules/query/query.routes.js"
-
+import { connectDB } from "./config/db.js";
+import dotenv from "dotenv"
+dotenv.config()
+connectDB()
 const app = express();
 app.use(cors({
   origin: "*", // your frontend URL
