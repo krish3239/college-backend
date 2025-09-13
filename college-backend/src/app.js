@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser"
 import authRoutes from "./modules/auth/auth.routes.js"
 import studentRoutes from "./modules/student/student.routes.js"
 import studentResult from "./modules/result/result.routes.js"
+import studentEnquiry from "./modules/query/query.routes.js"
 
 const app = express();
 app.use(cors({
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/student",studentRoutes)
 app.use("/api/result",studentResult)
+app.use("/api/enquiry",studentEnquiry)
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
