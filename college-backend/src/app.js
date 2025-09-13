@@ -21,6 +21,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/student",studentRoutes)
 app.use("/api/result",studentResult)
 app.use("/api/enquiry",studentEnquiry)
+app.get("/", (req, res) => {
+  res.send("hello");
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
