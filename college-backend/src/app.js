@@ -10,7 +10,7 @@ import studentEnquiry from "./modules/query/query.routes.js"
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173", // your frontend URL
+  origin: "*", // your frontend URL
   credentials: true,               // allow cookies
 }));
 app.use(helmet());
