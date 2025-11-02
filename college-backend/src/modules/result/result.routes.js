@@ -10,8 +10,8 @@ const router = express.Router();
 
 
 // Protected routes (require authentication)
-router.use(auth()); // Apply auth middleware to all routes below
 router.get('/student/:rollNumber', ResultControllers.getResultByRollNumber);
+router.use(auth()); // Apply auth middleware to all routes below
 // Admin only routes  
 router.post('/', authorize("admin"), ResultControllers.createResult);
 router.put('/:rollNumber',authorize("admin"), ResultControllers.updateResult);
