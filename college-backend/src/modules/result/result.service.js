@@ -4,7 +4,7 @@ class ResultService {
   // Get result by roll number
   async getResultByRollNumber(rollNumber) {
     try {
-      const result = await Result.findOne({ 'studentInfo.rollNumber': rollNumber })
+      const result = await Result.find({ 'studentInfo.rollNumber': rollNumber })
         .populate('createdBy', 'name email')
         .populate('updatedBy', 'name email');
       return result;
@@ -17,13 +17,13 @@ class ResultService {
   async createResult(resultData, userId) {
     try {
       // Check if result already exists for this roll number
-      const existingResult = await Result.findOne({ 
-        'studentInfo.rollNumber': resultData.studentInfo.rollNumber 
-      });
+      // const existingResult = await Result.findOne({ 
+      //   'studentInfo.rollNumber': resultData.studentInfo.rollNumber 
+      // });
 
-      if (existingResult) {
-        throw new Error('Result already exists for this roll number');
-      }
+      // if (existingResult) {
+      //   throw new Error('Result already exists for this roll number');
+      // }
 
       const result = new Result({
         ...resultData,
