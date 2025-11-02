@@ -35,15 +35,23 @@ const resultSchema = new mongoose.Schema({
     rollNumber: {
       type: String,
       required: true,
-      unique: true,
-      trim: true
+      trim: true,
+      uppercase: true
     },
     course: {
       type: String,
       required: true,
       trim: true
     },
-    semester: {
+    // Flexible field that can be semester or year
+    periodType: {
+      type: String,
+      required: true,
+      enum: ['semester', 'year'],
+      default: 'semester'
+    },
+    // Can store "1", "2", "3" for semesters or "1st Year", "2nd Year" for years
+    period: {
       type: String,
       required: true,
       trim: true
@@ -86,7 +94,15 @@ const resultSchema = new mongoose.Schema({
 });
 
 
-// Index for faster searches
-resultSchema.index({ 'studentInfo.rollNumber': 1 });
+
+// Compound index for faster searches with roll number, period, and session
+resultSchema.index({ 
+  'studentInfo.rollNumber': 1, 
+  'studentInfo.period': 1, 
+  'studentInfo.session': 1 
+}, { unique: true });
+
+// Index for searching by period type
+resultSchema.index({ 'studentInfo.periodType': 1 });
 
 export const Result = mongoose.model('Result', resultSchema);

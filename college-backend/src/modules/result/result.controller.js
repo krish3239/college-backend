@@ -1,17 +1,22 @@
-import { resultService} from "./result.service.js";
+import { resultService } from "./result.service.js";
 
 class ResultController {
-  // Get result by roll number
+  // Get result by roll number with optional period and session
   async getResultByRollNumber(req, res) {
     try {
       const { rollNumber } = req.params;
+      const { period, session } = req.query;
 
-      const result = await resultService.getResultByRollNumber(rollNumber);
+      const result = await resultService.getResultByRollNumber(
+        rollNumber,
+        period,
+        session
+      );
 
       if (!result) {
         return res.status(404).json({
           success: false,
-          message: 'No result found for given roll number'
+          message: 'No result found for given parameters'
         });
       }
 
@@ -28,11 +33,37 @@ class ResultController {
     }
   }
 
+  // Get all results for a student
+  async getAllResultsByRollNumber(req, res) {
+    try {
+      const { rollNumber } = req.params;
+
+      const results = await resultService.getAllResultsByRollNumber(rollNumber);
+
+      if (!results || results.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'No results found for given roll number'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Results fetched successfully',
+        data: results
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
   // Create new result
   async createResult(req, res) {
     try {
-      // Check for validation errors
-      const userId = req.user.id; // Assuming auth middleware sets req.user
+      const userId = req.user.id;
       const result = await resultService.createResult(req.body, userId);
 
       res.status(201).json({
@@ -52,8 +83,16 @@ class ResultController {
   async updateResult(req, res) {
     try {
       const { rollNumber } = req.params;
+      const { period, session } = req.query;
       const userId = req.user.id;
-      const result = await resultService.updateResult(rollNumber, req.body, userId);
+      
+      const result = await resultService.updateResult(
+        rollNumber,
+        period,
+        session,
+        req.body,
+        userId
+      );
 
       res.status(200).json({
         success: true,
@@ -72,8 +111,9 @@ class ResultController {
   async deleteResult(req, res) {
     try {
       const { rollNumber } = req.params;
+      const { period, session } = req.query;
 
-      await resultService.deleteResult(rollNumber);
+      await resultService.deleteResult(rollNumber, period, session);
 
       res.status(200).json({
         success: true,
@@ -106,16 +146,45 @@ class ResultController {
       });
     }
   }
+
+  // Get results by period type
+  async getResultsByPeriodType(req, res) {
+    try {
+      const { periodType } = req.params;
+
+      if (!['semester', 'year'].includes(periodType)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid period type. Must be "semester" or "year"'
+        });
+      }
+
+      const results = await resultService.getResultsByPeriodType(periodType);
+
+      res.status(200).json({
+        success: true,
+        message: 'Results fetched successfully',
+        data: results
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
   // Get all results with pagination and filters
   async getAllResults(req, res) {
     try {
-      const { page = 1, limit = 10, session, course, status, semester } = req.query;
+      const { page = 1, limit = 10, session, course, status, period, periodType } = req.query;
 
       const filters = {};
       if (session) filters.session = session;
       if (course) filters.course = course;
       if (status) filters.status = status;
-      if (semester) filters.semester = semester;
+      if (period) filters.period = period;
+      if (periodType) filters.periodType = periodType;
 
       const results = await resultService.getAllResults(page, limit, filters);
 
@@ -132,12 +201,18 @@ class ResultController {
       });
     }
   }
+
   // Get student statistics
   async getStudentStatistics(req, res) {
     try {
       const { rollNumber } = req.params;
+      const { period, session } = req.query;
 
-      const stats = await resultService.getStudentStatistics(rollNumber);
+      const stats = await resultService.getStudentStatistics(
+        rollNumber,
+        period,
+        session
+      );
 
       res.status(200).json({
         success: true,
